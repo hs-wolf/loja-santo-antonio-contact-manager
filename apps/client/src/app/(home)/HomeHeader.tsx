@@ -1,7 +1,7 @@
-import GlobalButton from './(global)/GlobalButton';
-import GlobalButtonIcon from './(global)/GlobalButtonIcon';
-import { IconName } from './(global)/GlobalIcon';
-import GlobalInputField from './(global)/GlobalInputField';
+import GlobalButton from '../(global)/GlobalButton';
+import GlobalButtonIcon from '../(global)/GlobalButtonIcon';
+import { IconName } from '../(global)/GlobalIcon';
+import GlobalInputField from '../(global)/GlobalInputField';
 
 export default function HomeHeader() {
   return (

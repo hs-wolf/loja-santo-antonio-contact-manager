@@ -5,9 +5,9 @@ import { useState } from 'react';
 import Logo from '../../public/images/logo.svg';
 import GlobalButtonIcon from './(global)/GlobalButtonIcon';
 import { IconName } from './(global)/GlobalIcon';
-import HomeFilter, { FilterList } from './HomeFilter';
-import HomeHeader from './HomeHeader';
-import HomeList from './HomeList';
+import HomeFilter, { FilterList } from './(home)/HomeFilter';
+import HomeHeader from './(home)/HomeHeader';
+import HomeList from './(home)/HomeList';
 
 export default function HomePage() {
   const [currentFilter, setFilter] = useState<FilterList>();

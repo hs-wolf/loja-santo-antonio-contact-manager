@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import GlobalButton from './(global)/GlobalButton';
-import GlobalButtonIcon from './(global)/GlobalButtonIcon';
-import { IconName } from './(global)/GlobalIcon';
+import GlobalButton from '../(global)/GlobalButton';
+import GlobalButtonIcon from '../(global)/GlobalButtonIcon';
+import { IconName } from '../(global)/GlobalIcon';
 
 export default function HomeListItem() {
   return (
