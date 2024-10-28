@@ -1,9 +1,12 @@
+import GlobalIcon, { IconName } from './GlobalIcon';
+
 export default function GlobalButton({
   name,
   label,
   type,
   theme,
   size,
+  icon,
   action,
   className,
 }: {
@@ -12,6 +15,7 @@ export default function GlobalButton({
   type?: 'button' | 'submit' | 'reset';
   theme?: 'primary' | 'secondary' | 'tertiary';
   size?: 'medium' | 'small';
+  icon?: IconName;
   action?: () => void;
   className?: string;
 }) {
@@ -43,9 +47,10 @@ export default function GlobalButton({
     <button
       type={type ?? 'button'}
       name={name}
-      className={`flex items-center justify-center font-semibold ${buttonTheme()} ${buttonSize()} ${className}`}
+      className={`flex items-center justify-center gap-1 font-semibold whitespace-nowrap ${buttonTheme()} ${buttonSize()} ${className}`}
       onClick={action}
     >
+      {icon && <GlobalIcon name={icon} />}
       {label}
     </button>
   );

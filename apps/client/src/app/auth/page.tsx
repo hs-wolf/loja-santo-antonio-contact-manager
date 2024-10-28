@@ -2,7 +2,7 @@ import Image from 'next/image';
 import BgLine1 from '../../../public/images/bg-line-1.svg';
 import BgLine2 from '../../../public/images/bg-line-2.svg';
 import BgLine3 from '../../../public/images/bg-line-3.svg';
-import Logo from '../../../public/images/logo.svg';
+import LogoText from '../../../public/images/logo-text.svg';
 import AuthForm from './AuthForm';
 
 export default function AuthPage() {
@@ -35,7 +35,7 @@ export default function AuthPage() {
         />
       </div>
       <button className="absolute top-[50px] left-[98px]">
-        <Image src={Logo} alt="Guard" width={131} height={32} />
+        <Image src={LogoText} alt="Guard" width={131} height={32} />
       </button>
       <AuthForm />
     </div>
