@@ -20,7 +20,7 @@ export default function HomeModalUnlock({
 
   return (
     <GlobalModal close={close} label="Visualizar informações">
-      <div className="flex flex-col gap-[32px]">
+      <div className="flex flex-col gap-[16px]">
         <div className="flex flex-col py-5 px-[16px]">
           <GlobalInputField
             name={'password'}
@@ -28,6 +28,7 @@ export default function HomeModalUnlock({
             placeholder="Digite sua senha"
           />
         </div>
+        <hr className="border-border-primary/20" />
         <div className="flex justify-end gap-[13px] p-3">
           <GlobalButton
             name={'back'}

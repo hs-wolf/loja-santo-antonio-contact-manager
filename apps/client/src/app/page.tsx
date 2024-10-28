@@ -9,6 +9,8 @@ import HomeFilter, { FilterList } from './(home)/HomeFilter';
 import HomeHeader from './(home)/HomeHeader';
 import HomeList from './(home)/HomeList';
 import HomeModalUnlock from './(home)/HomeModalUnlock';
+import HomeModalAddContact from './(home)/HomeModalAddContact';
+import HomeModalEditContact from './(home)/HomeModalEditContact';
 
 export default function HomePage() {
   const [currentFilter, setFilter] = useState<FilterList>();
@@ -20,13 +22,38 @@ export default function HomePage() {
   const [dataToUnlock, setDataToUnlock] = useState<string[]>([]);
   const [showUnlockModal, setShowUnlockModal] = useState<boolean>(false);
 
-  function unlockAll() {
+  function unlockData() {
     setDataToUnlock([]);
     setShowUnlockModal(true);
   }
 
   function saveUnlockedData(data: unknown[]) {
     setShowUnlockModal(false);
+  }
+
+  const [showModalAddContact, setShowModalAddContact] =
+    useState<boolean>(false);
+
+  function saveNewContact(data: unknown) {
+    setShowModalAddContact(false);
+  }
+
+  const [showModalEditContact, setShowModalEditContact] =
+    useState<boolean>(false);
+  const [dataToChange, setDataToChange] = useState<string>();
+  const [dataToRemove, setDataToRemove] = useState<string>();
+
+  function changeContact(id: string) {
+    setDataToChange(id);
+    setShowModalEditContact(true);
+  }
+
+  function removeContact(id: string) {
+    setDataToRemove(id);
+  }
+
+  function saveContactChange(data: unknown) {
+    setShowModalEditContact(false);
   }
 
   return (
@@ -48,14 +75,21 @@ export default function HomePage() {
         </div>
       </nav>
       <main className="flex flex-col flex-1 gap-[32px] p-[40px] bg-background-secondary rounded-[40px]">
-        <HomeHeader unlockAll={unlockAll} />
+        <HomeHeader
+          unlockAll={unlockData}
+          addContact={() => setShowModalAddContact(true)}
+        />
         <div className="flex flex-1 gap-[48px] overflow-hidden">
           <HomeFilter value={currentFilter} select={changeFilter} />
           <div className="flex flex-col flex-1 gap-[29px] me-[54px]">
             <p className="h-[38px] text-sm font-bold border-b border-content-primary/20">
               {currentFilter ?? 'Todos'}
             </p>
-            <HomeList />
+            <HomeList
+              change={changeContact}
+              unlock={unlockData}
+              remove={removeContact}
+            />
           </div>
         </div>
       </main>
@@ -65,6 +99,20 @@ export default function HomePage() {
           close={() => setShowUnlockModal(false)}
           back={() => setShowUnlockModal(false)}
           save={saveUnlockedData}
+        />
+      )}
+      {showModalAddContact && (
+        <HomeModalAddContact
+          close={() => setShowModalAddContact(false)}
+          cancel={() => setShowModalAddContact(false)}
+          save={saveNewContact}
+        />
+      )}
+      {showModalEditContact && (
+        <HomeModalEditContact
+          close={() => setShowModalEditContact(false)}
+          cancel={() => setShowModalEditContact(false)}
+          save={saveContactChange}
         />
       )}
     </div>

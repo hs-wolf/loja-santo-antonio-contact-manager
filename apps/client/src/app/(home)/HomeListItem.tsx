@@ -3,7 +3,15 @@ import GlobalButton from '../(global)/GlobalButton';
 import GlobalButtonIcon from '../(global)/GlobalButtonIcon';
 import { IconName } from '../(global)/GlobalIcon';
 
-export default function HomeListItem() {
+export default function HomeListItem({
+  change,
+  unlock,
+  remove,
+}: {
+  change: (id: string) => void;
+  unlock: (id: string) => void;
+  remove: (id: string) => void;
+}) {
   return (
     <div className="grid grid-cols-6 items-center p-3 border-b border-border-primary rounded">
       <div className="col-span-2 flex items-start gap-3">
@@ -28,18 +36,21 @@ export default function HomeListItem() {
           theme="tertiary"
           size="small"
           icon={IconName.EDIT}
+          action={() => change('')}
         />
         <GlobalButtonIcon
           name={'lock'}
           icon={IconName.LOCK}
           theme="tertiary"
           size="small"
+          action={() => unlock('')}
         />
         <GlobalButtonIcon
           name={'delete'}
           icon={IconName.DELETE}
           theme="tertiary"
           size="small"
+          action={() => remove('')}
         />
       </div>
     </div>

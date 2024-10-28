@@ -3,7 +3,13 @@ import GlobalButtonIcon from '../(global)/GlobalButtonIcon';
 import { IconName } from '../(global)/GlobalIcon';
 import GlobalInputField from '../(global)/GlobalInputField';
 
-export default function HomeHeader({ unlockAll }: { unlockAll: () => void }) {
+export default function HomeHeader({
+  unlockAll,
+  addContact,
+}: {
+  unlockAll: () => void;
+  addContact: () => void;
+}) {
   return (
     <div className="flex items-center gap-[10px]">
       <h1 className="text-2xl font-bold whitespace-nowrap">
@@ -20,6 +26,7 @@ export default function HomeHeader({ unlockAll }: { unlockAll: () => void }) {
           name={'add-contact'}
           label={'+ Adicionar contato'}
           theme="secondary"
+          action={addContact}
         />
         <GlobalButtonIcon
           name={'account'}
