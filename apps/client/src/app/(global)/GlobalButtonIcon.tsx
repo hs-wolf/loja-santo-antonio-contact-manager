@@ -22,7 +22,7 @@ export default function GlobalButtonIcon({
       case 'secondary':
         return active
           ? 'bg-background-tertiary text-accent-brand'
-          : 'bg-background-secondary text-content-muted';
+          : 'bg-background-secondary text-content-muted hover:text-content-primary';
       case 'tertiary':
         return active
           ? 'border border-border-primary text-accent-brand'
@@ -30,7 +30,7 @@ export default function GlobalButtonIcon({
       default:
         return active
           ? 'bg-background-tertiary text-accent-brand'
-          : 'bg-background-secondary text-content-muted';
+          : 'bg-background-secondary text-content-muted hover:text-content-primary';
     }
   }
 

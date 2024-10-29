@@ -7,6 +7,7 @@ export enum IconName {
   DELETE = 'delete',
   EDIT = 'edit',
   ERROR = 'error',
+  LOADING = 'loading',
   LOCK_OPEN = 'lock-open',
   LOCK = 'lock',
   LOGOUT = 'logout',
@@ -130,6 +131,72 @@ const iconList: IconItem[] = [
         xmlns="http://www.w3.org/2000/svg"
       >
         <path d="M12 17C12.2833 17 12.5208 16.9042 12.7125 16.7125C12.9042 16.5208 13 16.2833 13 16C13 15.7167 12.9042 15.4792 12.7125 15.2875C12.5208 15.0958 12.2833 15 12 15C11.7167 15 11.4792 15.0958 11.2875 15.2875C11.0958 15.4792 11 15.7167 11 16C11 16.2833 11.0958 16.5208 11.2875 16.7125C11.4792 16.9042 11.7167 17 12 17ZM12 13C12.2833 13 12.5208 12.9042 12.7125 12.7125C12.9042 12.5208 13 12.2833 13 12V8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8V12C11 12.2833 11.0958 12.5208 11.2875 12.7125C11.4792 12.9042 11.7167 13 12 13ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22Z" />
+      </svg>
+    ),
+  },
+  {
+    name: IconName.LOADING,
+    src: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1em"
+        height="1em"
+        viewBox="0 0 24 24"
+      >
+        <g fill="currentColor">
+          <circle cx="12" cy="3.5" r="1.5">
+            <animateTransform
+              attributeName="transform"
+              calcMode="discrete"
+              dur="2.4s"
+              repeatCount="indefinite"
+              type="rotate"
+              values="0 12 12;90 12 12;180 12 12;270 12 12"
+            />
+            <animate
+              attributeName="opacity"
+              dur="0.6s"
+              repeatCount="indefinite"
+              values="1;1;0"
+            />
+          </circle>
+          <circle cx="12" cy="3.5" r="1.5" transform="rotate(30 12 12)">
+            <animateTransform
+              attributeName="transform"
+              begin="0.2s"
+              calcMode="discrete"
+              dur="2.4s"
+              repeatCount="indefinite"
+              type="rotate"
+              values="30 12 12;120 12 12;210 12 12;300 12 12"
+            />
+            <animate
+              attributeName="opacity"
+              begin="0.2s"
+              dur="0.6s"
+              repeatCount="indefinite"
+              values="1;1;0"
+            />
+          </circle>
+          <circle cx="12" cy="3.5" r="1.5" transform="rotate(60 12 12)">
+            <animateTransform
+              attributeName="transform"
+              begin="0.4s"
+              calcMode="discrete"
+              dur="2.4s"
+              repeatCount="indefinite"
+              type="rotate"
+              values="60 12 12;150 12 12;240 12 12;330 12 12"
+            />
+            <animate
+              attributeName="opacity"
+              begin="0.4s"
+              dur="0.6s"
+              repeatCount="indefinite"
+              values="1;1;0"
+            />
+          </circle>
+        </g>
       </svg>
     ),
   },

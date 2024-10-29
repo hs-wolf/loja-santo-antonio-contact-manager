@@ -13,7 +13,7 @@ export default function HomeListItem({
   remove: (id: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-6 items-center p-3 border-b border-border-primary rounded">
+    <div className="grid grid-cols-6 items-center p-3 border-b border-border-primary rounded last:border-none">
       <div className="col-span-2 flex items-start gap-3">
         <Image
           src={'/images/profile-placeholder.jpg'}

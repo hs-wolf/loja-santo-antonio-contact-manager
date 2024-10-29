@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Logo from '../../public/images/logo.svg';
 import GlobalButtonIcon from './(global)/GlobalButtonIcon';
 import { IconName } from './(global)/GlobalIcon';
@@ -11,8 +11,30 @@ import HomeList from './(home)/HomeList';
 import HomeModalUnlock from './(home)/HomeModalUnlock';
 import HomeModalAddContact from './(home)/HomeModalAddContact';
 import HomeModalEditContact from './(home)/HomeModalEditContact';
+import { supabaseLogout } from './actions';
+import { createClient } from '../utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 export default function HomePage() {
+  const supabase = createClient();
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          throw error;
+        }
+        setUser(data.user);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
   const [currentFilter, setFilter] = useState<FilterList>();
 
   function changeFilter(value: FilterList) {
@@ -67,11 +89,15 @@ export default function HomePage() {
             active={true}
           />
           <GlobalButtonIcon name={'account'} icon={IconName.SETTINGS} />
-          <GlobalButtonIcon name={'account'} icon={IconName.LOGOUT} />
+          <GlobalButtonIcon
+            name={'account'}
+            icon={IconName.LOGOUT}
+            action={() => supabaseLogout()}
+          />
         </div>
         <div className="flex flex-col gap-1 text-[10px]">
           <p className="text-content-muted font-bold">Logado como:</p>
-          <p className="text-content-body">email@email.com </p>
+          <p className="text-content-body">{user?.email}</p>
         </div>
       </nav>
       <main className="flex flex-col flex-1 gap-[32px] p-[40px] bg-background-secondary rounded-[40px]">
@@ -82,7 +108,7 @@ export default function HomePage() {
         <div className="flex flex-1 gap-[48px] overflow-hidden">
           <HomeFilter value={currentFilter} select={changeFilter} />
           <div className="flex flex-col flex-1 gap-[29px] me-[54px]">
-            <p className="h-[38px] text-sm font-bold border-b border-content-primary/20">
+            <p className="min-h-[38px] text-sm font-bold border-b border-content-primary/20">
               {currentFilter ?? 'Todos'}
             </p>
             <HomeList

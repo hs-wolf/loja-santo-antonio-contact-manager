@@ -14,9 +14,9 @@ export default function AuthForm() {
   return (
     <div className="z-10 flex flex-col w-[497px] h-full py-[40px] px-[88px] bg-background-secondary overflow-auto">
       {loginOrRegister ? (
-        <AuthFormRegister changeForm={toggleDivs} />
-      ) : (
         <AuthFormLogin changeForm={toggleDivs} />
+      ) : (
+        <AuthFormRegister changeForm={toggleDivs} />
       )}
     </div>
   );

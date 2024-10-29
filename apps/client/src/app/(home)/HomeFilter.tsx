@@ -56,7 +56,7 @@ export default function HomeFilter({
   return (
     <ul
       ref={listRef}
-      className="flex flex-col gap-3 w-[58px] py-[16px] bg-accent-brand rounded-[20px] overflow-auto hide-scrollbar snap-y snap-mandatory"
+      className="flex flex-col justify-between gap-3 w-[58px] py-[16px] bg-accent-brand rounded-[20px] overflow-auto hide-scrollbar snap-y snap-mandatory"
     >
       {Object.values(FilterList).map((item, index) => (
         <li

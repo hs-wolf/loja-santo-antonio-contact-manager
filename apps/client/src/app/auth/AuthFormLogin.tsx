@@ -1,44 +1,52 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import GlobalInputField from '../(global)/GlobalInputField';
+import {
+  LoginFields,
+  loginValidationSchema,
+  LoginValidationSchema,
+} from '@loja-santo-antonio-contact-manager/models';
 import GlobalButton from '../(global)/GlobalButton';
+import { IconName } from '../(global)/GlobalIcon';
+import GlobalInputField from '../(global)/GlobalInputField';
+import { supabaseLogin } from './actions';
 
 export default function AuthFormLogin({
   changeForm,
 }: {
   changeForm: () => void;
 }) {
-  enum Fields {
-    EMAIL = 'email',
-    PASSWORD = 'password',
-  }
-
-  const validationFormSchema = z.object({
-    [Fields.EMAIL]: z.string().email({ message: 'Digite um e-mail válido' }),
-    [Fields.PASSWORD]: z
-      .string()
-      .min(8, { message: 'Pelo menos 8 caracteres' }),
-  });
-
-  type ValidationFormSchema = z.infer<typeof validationFormSchema>;
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ValidationFormSchema>({
-    resolver: zodResolver(validationFormSchema),
+  } = useForm<LoginValidationSchema>({
+    resolver: zodResolver(loginValidationSchema),
   });
 
-  const onSubmit = (data: ValidationFormSchema) => {
-    console.log(data);
-  };
+  const [isLogging, setLogging] = useState(false);
+  const [supabaseError, setSupabaseError] = useState<Error>();
+
+  async function onSubmit(data: LoginValidationSchema) {
+    try {
+      setLogging(true);
+      await supabaseLogin(data);
+    } catch (error) {
+      setSupabaseError(error as Error);
+    } finally {
+      setLogging(false);
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`flex flex-col flex-1 ${
+        isLogging ? 'pointer-events-none opacity-50' : ''
+      }`}
+    >
       <p className="text-xs text-end">
         Não tem uma conta?{' '}
         <button className="font-bold text-accent-brand" onClick={changeForm}>
@@ -52,23 +60,28 @@ export default function AuthFormLogin({
             type="email"
             label="E-mail"
             placeholder="Digite seu e-mail"
-            error={errors[Fields.EMAIL]?.message}
-            {...register(Fields.EMAIL)}
+            error={errors[LoginFields.EMAIL]?.message}
+            {...register(LoginFields.EMAIL)}
           />
           <GlobalInputField
             type="password"
             label="Senha"
             placeholder="Insira sua senha"
-            error={errors[Fields.PASSWORD]?.message}
-            {...register(Fields.PASSWORD)}
+            error={errors[LoginFields.PASSWORD]?.message}
+            {...register(LoginFields.PASSWORD)}
           />
         </div>
-        <GlobalButton
-          name={'login'}
-          label={'Acessar conta'}
-          type="submit"
-          className="self-end"
-        />
+        <div className="flex flex-col items-end gap-5">
+          <GlobalButton
+            name={'login'}
+            label={'Acessar conta'}
+            type="submit"
+            icon={isLogging ? IconName.LOADING : undefined}
+          />
+          {supabaseError && (
+            <p className="text-sm text-accent-red">{supabaseError.message}</p>
+          )}
+        </div>
       </div>
     </form>
   );
