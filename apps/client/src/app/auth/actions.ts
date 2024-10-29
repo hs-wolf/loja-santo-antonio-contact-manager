@@ -13,6 +13,7 @@ import {
   LoginValidationSchema,
 } from '@loja-santo-antonio-contact-manager/models';
 import { createClient } from '../../utils/supabase/server';
+import customFetch from '../../utils/customFetch';
 
 export async function supabaseLogin(data: LoginValidationSchema) {
   const supabase = await createClient();
@@ -42,22 +43,14 @@ export async function supabaseRegister(data: RegisterValidationSchema) {
     password: data[RegisterFields.PASSWORD],
   };
 
-  const { data: response, error: signUpError } = await supabase.auth.signUp(
-    credentials
-  );
+  const { error: signUpError } = await supabase.auth.signUp(credentials);
   if (signUpError) {
     throw signUpError;
   }
 
-  const userId = response.user?.id;
-  const { error: updateError } = await supabase
-    .from('profiles')
-    .update({ name: data[RegisterFields.NAME] })
-    .eq('id', userId);
-
-  if (updateError) {
-    throw updateError;
-  }
+  await customFetch('POST', 'profiles', {
+    name: data[RegisterFields.NAME],
+  });
 
   revalidatePath('/', 'layout');
   redirect('/');
