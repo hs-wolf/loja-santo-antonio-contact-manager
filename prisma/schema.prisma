@@ -9,20 +9,19 @@ datasource db {
 }
 
 model contacts {
-  id         BigInt   @id @default(autoincrement())
   owner_id   String   @db.Uuid
   name       String?
   email      String?
   phone      String?
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
-  profiles   profiles @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  encrypted  Boolean  @default(true)
 }
 
 model profiles {
-  id         String     @id(map: "profile_pkey") @db.Uuid
+  id         String   @id(map: "profile_pkey") @db.Uuid
   name       String?
-  created_at DateTime   @default(now()) @db.Timestamptz(6)
-  updated_at DateTime   @default(now()) @db.Timestamptz(6)
-  contacts   contacts[]
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
 }

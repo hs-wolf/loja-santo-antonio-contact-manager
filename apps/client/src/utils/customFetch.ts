@@ -6,7 +6,7 @@ export async function customFetch<T = unknown>(
   method: HttpMethod,
   path: string,
   body?: Record<string | number | symbol, unknown>,
-  options?: Omit<RequestInit, 'method' | 'headers' | 'body'>
+  options?: RequestInit
 ): Promise<T> {
   const apiUrl = process.env.API_URL;
 
@@ -24,6 +24,8 @@ export async function customFetch<T = unknown>(
     headers,
     body: JSON.stringify(body),
   });
+
+  console.log(response);
 
   if (!response.ok) {
     const errorText = await response.text();

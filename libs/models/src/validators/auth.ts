@@ -43,3 +43,15 @@ export const loginValidationSchema = z.object({
 });
 
 export type LoginValidationSchema = z.infer<typeof loginValidationSchema>;
+
+export enum UlockFields {
+  PASSWORD = 'password',
+}
+
+export const unlockValidationSchema = z.object({
+  [UlockFields.PASSWORD]: z
+    .string()
+    .min(8, { message: 'Pelo menos 8 caracteres' }),
+});
+
+export type UnlockValidationSchema = z.infer<typeof unlockValidationSchema>;

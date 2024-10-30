@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,19 +37,21 @@ export class AppController {
   @Put('profiles/:id')
   @UseGuards(JwtAuthGuard)
   async updateProfile(
-    @Req() request: Request,
+    @Req() request: any,
     @Param('id') id: string,
     @Body() body: { name: Profile['name'] }
   ): Promise<Profile> {
+    this.appService.checkOwner(id, request);
     return this.appService.updateProfile({
       where: { id },
       data: body,
     });
   }
 
-  @Post('post')
+  @Post('contacts')
   @UseGuards(JwtAuthGuard)
   async createContact(
+    @Req() request: any,
     @Body()
     body: {
       name: Contact['name'];
@@ -58,32 +61,64 @@ export class AppController {
   ): Promise<Contact> {
     const { name, email, phone } = body;
     return this.appService.createContact({
+      owner_id: request.user.sub,
       name,
       email,
       phone,
-      profiles: {
-        connect: {
-          id: '',
+    });
+  }
+
+  @Get('contacts')
+  @UseGuards(JwtAuthGuard)
+  async getContacts(
+    @Req() req: any,
+    @Query()
+    params: {
+      letter?: string;
+    }
+  ): Promise<Contact[]> {
+    return this.appService.getContacts({
+      where: {
+        owner_id: req.user.sub,
+        name: {
+          startsWith: params.letter,
         },
       },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  @Get('contacts/:id')
+  @UseGuards(JwtAuthGuard)
+  async getContact(
+    @Req() req: any,
+    @Param('id') id: string
+  ): Promise<Contact | null> {
+    return this.appService.getContact({
+      id,
+      owner_id: req.user.sub,
     });
   }
 
   @Put('contacts/:id')
   @UseGuards(JwtAuthGuard)
   async updateContact(
+    @Req() req: any,
     @Param('id') id: string,
     @Body() body: { name: Contact['name'] }
   ): Promise<Contact> {
     return this.appService.updateContact({
-      where: { id: Number(id) },
+      where: { id, owner_id: req.user.sub },
       data: body,
     });
   }
 
   @Delete('contacts/:id')
   @UseGuards(JwtAuthGuard)
-  async deleteContact(@Param('id') id: string): Promise<Contact> {
-    return this.appService.deleteContact({ id: Number(id) });
+  async deleteContact(
+    @Req() req: any,
+    @Param('id') id: string
+  ): Promise<Contact> {
+    return this.appService.deleteContact({ id, owner_id: req.user.sub });
   }
 }

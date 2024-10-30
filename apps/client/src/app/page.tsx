@@ -1,5 +1,6 @@
 'use client';
 
+import { contacts as Contact } from '@prisma/client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Logo from '../../public/images/logo.svg';
@@ -7,13 +8,13 @@ import GlobalButtonIcon from './(global)/GlobalButtonIcon';
 import { IconName } from './(global)/GlobalIcon';
 import HomeFilter, { FilterList } from './(home)/HomeFilter';
 import HomeHeader from './(home)/HomeHeader';
-import HomeList from './(home)/HomeList';
 import HomeModalUnlock from './(home)/HomeModalUnlock';
 import HomeModalAddContact from './(home)/HomeModalAddContact';
 import HomeModalEditContact from './(home)/HomeModalEditContact';
-import { supabaseLogout } from './actions';
+import { getContacts, supabaseLogout } from './(home)/actions';
 import { createClient } from '../utils/supabase/client';
 import { User } from '@supabase/supabase-js';
+import HomeListItem from './(home)/HomeListItem';
 
 export default function HomePage() {
   const supabase = createClient();
@@ -21,7 +22,7 @@ export default function HomePage() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUser = async () => {
       try {
         const { data, error } = await supabase.auth.getUser();
         if (error) {
@@ -32,7 +33,7 @@ export default function HomePage() {
         console.log(err);
       }
     };
-    fetchData();
+    fetchUser();
   }, []);
 
   const [currentFilter, setFilter] = useState<FilterList>();
@@ -41,41 +42,56 @@ export default function HomePage() {
     setFilter(value === currentFilter ? undefined : value);
   }
 
-  const [dataToUnlock, setDataToUnlock] = useState<string[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
+  const fetchContacts = async () => {
+    try {
+      if (isFetching) {
+        return;
+      }
+      setIsFetching(true);
+      const data = await getContacts(currentFilter);
+      setContacts(data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const [dataToUnlock, setDataToUnlock] = useState<string>('');
   const [showUnlockModal, setShowUnlockModal] = useState<boolean>(false);
 
-  function unlockData() {
-    setDataToUnlock([]);
+  function unlockData(id: string) {
+    setDataToUnlock(id);
     setShowUnlockModal(true);
   }
 
-  function saveUnlockedData(data: unknown[]) {
-    setShowUnlockModal(false);
+  function saveUnlockedData(data: Contact) {
+    const index = contacts.findIndex((contact) => contact.id === data.id);
+    if (index >= 0) {
+      const newContacts = [...contacts];
+      newContacts[index] = data;
+      setContacts(newContacts);
+      setShowUnlockModal(false);
+    }
   }
 
   const [showModalAddContact, setShowModalAddContact] =
     useState<boolean>(false);
 
-  function saveNewContact(data: unknown) {
-    setShowModalAddContact(false);
-  }
-
   const [showModalEditContact, setShowModalEditContact] =
     useState<boolean>(false);
-  const [dataToChange, setDataToChange] = useState<string>();
-  const [dataToRemove, setDataToRemove] = useState<string>();
+  const [dataToChange, setDataToChange] = useState<string>('');
 
   function changeContact(id: string) {
     setDataToChange(id);
     setShowModalEditContact(true);
-  }
-
-  function removeContact(id: string) {
-    setDataToRemove(id);
-  }
-
-  function saveContactChange(data: unknown) {
-    setShowModalEditContact(false);
   }
 
   return (
@@ -100,28 +116,36 @@ export default function HomePage() {
           <p className="text-content-body">{user?.email}</p>
         </div>
       </nav>
-      <main className="flex flex-col flex-1 gap-[32px] p-[40px] bg-background-secondary rounded-[40px]">
-        <HomeHeader
-          unlockAll={unlockData}
-          addContact={() => setShowModalAddContact(true)}
-        />
+      <div className="flex flex-col flex-1 gap-[32px] p-[40px] bg-background-secondary rounded-[40px]">
+        <HomeHeader addContact={() => setShowModalAddContact(true)} />
         <div className="flex flex-1 gap-[48px] overflow-hidden">
           <HomeFilter value={currentFilter} select={changeFilter} />
           <div className="flex flex-col flex-1 gap-[29px] me-[54px]">
             <p className="min-h-[38px] text-sm font-bold border-b border-content-primary/20">
               {currentFilter ?? 'Todos'}
             </p>
-            <HomeList
-              change={changeContact}
-              unlock={unlockData}
-              remove={removeContact}
-            />
+            {isFetching ? (
+              <div className="flex flex-col justify-center items-center flex-1 animate-pulse">
+                <Image src={Logo} alt="Guard" width={58} height={64} />
+              </div>
+            ) : (
+              <div className="flex flex-col overflow-auto hide-scrollbar">
+                {contacts.map((contact) => (
+                  <HomeListItem
+                    contact={contact}
+                    key={contact.id}
+                    change={changeContact}
+                    unlock={unlockData}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </main>
+      </div>
       {showUnlockModal && (
         <HomeModalUnlock
-          data={dataToUnlock}
+          id={dataToUnlock}
           close={() => setShowUnlockModal(false)}
           back={() => setShowUnlockModal(false)}
           save={saveUnlockedData}
@@ -131,14 +155,13 @@ export default function HomePage() {
         <HomeModalAddContact
           close={() => setShowModalAddContact(false)}
           cancel={() => setShowModalAddContact(false)}
-          save={saveNewContact}
         />
       )}
       {showModalEditContact && (
         <HomeModalEditContact
+          id={dataToChange}
           close={() => setShowModalEditContact(false)}
           cancel={() => setShowModalEditContact(false)}
-          save={saveContactChange}
         />
       )}
     </div>

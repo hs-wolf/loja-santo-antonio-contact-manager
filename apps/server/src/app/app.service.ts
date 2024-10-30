@@ -5,9 +5,12 @@ import {
   contacts as Contact,
   profiles as Profile,
 } from '@prisma/client';
+import CryptoJS from 'crypto-js';
 
 @Injectable()
 export class AppService {
+  private readonly secretKey = process.env.ENCRYPTION_KEY ?? '';
+
   constructor(private prisma: PrismaService) {}
 
   async createProfile(data: Prisma.profilesCreateInput): Promise<Profile> {
@@ -36,21 +39,16 @@ export class AppService {
   }
 
   async createContact(data: Prisma.contactsCreateInput): Promise<Contact> {
+    const encrypted = data;
+    encrypted.email = this._encrypt(encrypted.email ?? '');
+    encrypted.phone = this._encrypt(encrypted.phone ?? '');
     const newContact = await this.prisma.contacts.create({
-      data,
+      data: encrypted,
     });
     if (!newContact) {
       throw new HttpException("Couldn't create contact.", HttpStatus.NOT_FOUND);
     }
     return newContact;
-  }
-
-  async getContact(
-    where: Prisma.contactsWhereUniqueInput
-  ): Promise<Contact | null> {
-    return this.prisma.contacts.findUnique({
-      where,
-    });
   }
 
   async getContacts(params: {
@@ -67,6 +65,14 @@ export class AppService {
       cursor,
       where,
       orderBy,
+    });
+  }
+
+  async getContact(
+    where: Prisma.contactsWhereUniqueInput
+  ): Promise<Contact | null> {
+    return this.prisma.contacts.findUnique({
+      where,
     });
   }
 
@@ -87,5 +93,23 @@ export class AppService {
     return this.prisma.contacts.delete({
       where,
     });
+  }
+
+  async checkOwner(pathId: string, request: any): Promise<void> {
+    if (pathId !== request.user.sub) {
+      throw new HttpException(
+        "You're not the owner of this content.",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
+
+  private _encrypt(rawText: string): string {
+    return CryptoJS.AES.encrypt(rawText, this.secretKey).toString();
+  }
+
+  private _decrypt(encryptedText: string): string {
+    const bytes = CryptoJS.AES.decrypt(encryptedText, this.secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
   }
 }

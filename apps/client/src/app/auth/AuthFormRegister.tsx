@@ -31,6 +31,9 @@ export default function AuthFormRegister({
 
   async function onSubmit(data: RegisterValidationSchema) {
     try {
+      if (isRegistering) {
+        return;
+      }
       setRegistering(true);
       await supabaseRegister(data);
     } catch (error) {

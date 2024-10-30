@@ -4,10 +4,8 @@ import { IconName } from '../(global)/GlobalIcon';
 import GlobalInputField from '../(global)/GlobalInputField';
 
 export default function HomeHeader({
-  unlockAll,
   addContact,
 }: {
-  unlockAll: () => void;
   addContact: () => void;
 }) {
   return (
@@ -34,7 +32,6 @@ export default function HomeHeader({
           active={false}
           theme="tertiary"
           size="small"
-          action={unlockAll}
         />
       </div>
     </div>

@@ -31,6 +31,9 @@ export default function AuthFormLogin({
 
   async function onSubmit(data: LoginValidationSchema) {
     try {
+      if (isLogging) {
+        return;
+      }
       setLogging(true);
       await supabaseLogin(data);
     } catch (error) {
