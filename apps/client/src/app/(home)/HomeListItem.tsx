@@ -1,40 +1,20 @@
-'use client';
-
 import { contacts as Contact } from '@prisma/client';
 import Image from 'next/image';
 import GlobalButton from '../(global)/GlobalButton';
 import GlobalButtonIcon from '../(global)/GlobalButtonIcon';
 import { IconName } from '../(global)/GlobalIcon';
-import { deletecontact } from './actions';
-import { useState } from 'react';
 
 export default function HomeListItem({
   contact,
   change,
   unlock,
+  remove,
 }: {
   contact: Contact;
   change: (id: string) => void;
   unlock: (id: string) => void;
+  remove: (id: string) => void;
 }) {
-  const [iRemoving, setRemoving] = useState<boolean>(false);
-
-  async function remove() {
-    try {
-      if (iRemoving) {
-        return;
-      }
-      setRemoving(true);
-      await deletecontact(contact.id);
-      location.reload();
-      close();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRemoving(false);
-    }
-  }
-
   return (
     <div className="grid grid-cols-6 items-center p-3 border-b border-border-primary rounded last:border-none">
       <div className="col-span-2 flex items-start gap-3">
@@ -77,7 +57,7 @@ export default function HomeListItem({
           icon={IconName.DELETE}
           theme="tertiary"
           size="small"
-          action={remove}
+          action={() => remove(contact.id)}
         />
       </div>
     </div>

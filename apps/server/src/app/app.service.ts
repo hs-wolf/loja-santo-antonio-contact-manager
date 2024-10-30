@@ -76,13 +76,34 @@ export class AppService {
     });
   }
 
+  async getContactUnlock(
+    where: Prisma.contactsWhereUniqueInput
+  ): Promise<Contact | null> {
+    const contact = await this.prisma.contacts.findUnique({
+      where,
+    });
+    if (contact) {
+      contact.email = this._decrypt(contact.email ?? '');
+      contact.phone = this._decrypt(contact.phone ?? '');
+      contact.encrypted = false;
+    }
+    return contact;
+  }
+
   async updateContact(params: {
     where: Prisma.contactsWhereUniqueInput;
     data: Prisma.contactsUpdateInput;
   }): Promise<Contact> {
     const { where, data } = params;
+    const encrypted = data;
+    if (encrypted.email) {
+      encrypted.email = this._encrypt((encrypted.email as string) ?? '');
+    }
+    if (encrypted.phone) {
+      encrypted.phone = this._encrypt((encrypted.phone as string) ?? '');
+    }
     return this.prisma.contacts.update({
-      data,
+      data: encrypted,
       where,
     });
   }

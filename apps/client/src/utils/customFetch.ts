@@ -25,8 +25,6 @@ export async function customFetch<T = unknown>(
     body: JSON.stringify(body),
   });
 
-  console.log(response);
-
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(

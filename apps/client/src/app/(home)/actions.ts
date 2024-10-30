@@ -21,7 +21,8 @@ export async function supabaseLogout() {
 }
 
 export async function createContact(data: CreateContactValidationSchema) {
-  await customFetch('POST', 'contacts', data);
+  const newContact = await customFetch<Contact>('POST', 'contacts', data);
+  return newContact;
 }
 
 export async function getContacts() {

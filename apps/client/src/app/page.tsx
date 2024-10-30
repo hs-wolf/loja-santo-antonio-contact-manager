@@ -11,7 +11,7 @@ import HomeHeader from './(home)/HomeHeader';
 import HomeModalUnlock from './(home)/HomeModalUnlock';
 import HomeModalAddContact from './(home)/HomeModalAddContact';
 import HomeModalEditContact from './(home)/HomeModalEditContact';
-import { getContacts, supabaseLogout } from './(home)/actions';
+import { getContacts, deletecontact, supabaseLogout } from './(home)/actions';
 import { createClient } from '../utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import HomeListItem from './(home)/HomeListItem';
@@ -20,30 +20,36 @@ export default function HomePage() {
   const supabase = createClient();
 
   const [user, setUser] = useState<User | null>(null);
+  const [currentFilter, setFilter] = useState<FilterList>();
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [dataToUnlock, setDataToUnlock] = useState<string>('');
+  const [showUnlockModal, setShowUnlockModal] = useState<boolean>(false);
+  const [showModalAddContact, setShowModalAddContact] =
+    useState<boolean>(false);
+  const [showModalEditContact, setShowModalEditContact] =
+    useState<boolean>(false);
+  const [dataToChange, setDataToChange] = useState<string>('');
+
+  const fetchUser = async () => {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        throw error;
+      }
+      setUser(data.user);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-          throw error;
-        }
-        setUser(data.user);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     fetchUser();
   }, []);
-
-  const [currentFilter, setFilter] = useState<FilterList>();
 
   function changeFilter(value: FilterList) {
     setFilter(value === currentFilter ? undefined : value);
   }
-
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const fetchContacts = async () => {
     try {
@@ -51,8 +57,9 @@ export default function HomePage() {
         return;
       }
       setIsFetching(true);
-      const data = await getContacts(currentFilter);
-      setContacts(data);
+      const data = await getContacts();
+      console.log('I was callled');
+      setContacts(() => data);
     } catch (err) {
       console.log(err);
     } finally {
@@ -64,9 +71,6 @@ export default function HomePage() {
     fetchContacts();
   }, []);
 
-  const [dataToUnlock, setDataToUnlock] = useState<string>('');
-  const [showUnlockModal, setShowUnlockModal] = useState<boolean>(false);
-
   function unlockData(id: string) {
     setDataToUnlock(id);
     setShowUnlockModal(true);
@@ -75,19 +79,31 @@ export default function HomePage() {
   function saveUnlockedData(data: Contact) {
     const index = contacts.findIndex((contact) => contact.id === data.id);
     if (index >= 0) {
-      const newContacts = [...contacts];
-      newContacts[index] = data;
-      setContacts(newContacts);
+      const newContacts = contacts.map((contact, i) => {
+        if (i === index) {
+          return data;
+        }
+        return contact;
+      });
+      setContacts(() => newContacts);
       setShowUnlockModal(false);
     }
   }
 
-  const [showModalAddContact, setShowModalAddContact] =
-    useState<boolean>(false);
+  function saveNewContact(data: Contact) {
+    const newContacts = [...contacts];
+    newContacts.push(data);
+    setContacts(() => newContacts);
+    setShowModalAddContact(false);
+  }
 
-  const [showModalEditContact, setShowModalEditContact] =
-    useState<boolean>(false);
-  const [dataToChange, setDataToChange] = useState<string>('');
+  function removeContact(id: string) {
+    const index = contacts.findIndex((contact) => contact.id === id);
+    const newContacts = [...contacts];
+    newContacts.splice(index, 1);
+    setContacts(() => newContacts);
+    deletecontact(id);
+  }
 
   function changeContact(id: string) {
     setDataToChange(id);
@@ -136,6 +152,7 @@ export default function HomePage() {
                     key={contact.id}
                     change={changeContact}
                     unlock={unlockData}
+                    remove={removeContact}
                   />
                 ))}
               </div>
@@ -155,6 +172,7 @@ export default function HomePage() {
         <HomeModalAddContact
           close={() => setShowModalAddContact(false)}
           cancel={() => setShowModalAddContact(false)}
+          save={saveNewContact}
         />
       )}
       {showModalEditContact && (

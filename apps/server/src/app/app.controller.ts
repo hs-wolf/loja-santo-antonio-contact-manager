@@ -88,6 +88,18 @@ export class AppController {
     });
   }
 
+  @Get('contacts/:id/unlock')
+  @UseGuards(JwtAuthGuard)
+  async getContactUnlock(
+    @Req() req: any,
+    @Param('id') id: string
+  ): Promise<Contact | null> {
+    return this.appService.getContactUnlock({
+      id,
+      owner_id: req.user.sub,
+    });
+  }
+
   @Get('contacts/:id')
   @UseGuards(JwtAuthGuard)
   async getContact(

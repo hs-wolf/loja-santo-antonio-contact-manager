@@ -1,13 +1,14 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { contacts as Contact } from '@prisma/client';
 import GlobalButton from '../(global)/GlobalButton';
 import GlobalIcon, { IconName } from '../(global)/GlobalIcon';
 import GlobalInputField from '../(global)/GlobalInputField';
 import GlobalModal from '../(global)/GlobalModal';
 import { createContact } from './actions';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreateContactFields,
   createContactValidaitonSchema,
@@ -17,9 +18,11 @@ import {
 export default function HomeModalAddContact({
   close,
   cancel,
+  save,
 }: {
   close: () => void;
   cancel: () => void;
+  save: (data: Contact) => void;
 }) {
   const {
     register,
@@ -38,8 +41,8 @@ export default function HomeModalAddContact({
         return;
       }
       setSaving(true);
-      await createContact(data);
-      location.reload();
+      const newContact = await createContact(data);
+      save(newContact);
     } catch (error) {
       setApiError(error as any);
     } finally {

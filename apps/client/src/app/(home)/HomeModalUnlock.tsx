@@ -54,7 +54,7 @@ export default function HomeModalUnlock({
         throw error;
       }
       const contact = await unlockContact(id);
-      save(contact)
+      save(contact);
     } catch (error) {
       setApiError(error as any);
     } finally {
@@ -74,6 +74,7 @@ export default function HomeModalUnlock({
           <GlobalInputField
             label="Senha"
             placeholder="Digite sua senha"
+            type="password"
             error={errors[UlockFields.PASSWORD]?.message}
             {...register(UlockFields.PASSWORD)}
           />
